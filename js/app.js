@@ -1152,7 +1152,7 @@ btnEnviarWhatsApp.addEventListener('click', () => {
     }
 
     const mensajeEncoded = encodeURIComponent(mensaje);
-    const numeroWhatsApp = '34123456789'; // ← CAMBIA POR TU NÚMERO
+    const numeroWhatsApp = '5356502201'; // ← CAMBIA POR TU NÚMERO
     const url = `https://wa.me/${numeroWhatsApp}?text=${mensajeEncoded}`;
     window.open(url, '_blank');
 });
