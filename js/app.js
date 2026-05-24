@@ -673,7 +673,6 @@ function bindearEventos() {
                 }
             }
 
-            // Actualizar info de descuento por cantidad para la variante seleccionada
             const descCantInfo = card.querySelector('.descuento-cantidad-info');
             if (descCantInfo) descCantInfo.remove();
             if (esTienda) {
@@ -1155,6 +1154,18 @@ btnEnviarWhatsApp.addEventListener('click', () => {
     const numeroWhatsApp = '5356502201'; // ← CAMBIA POR TU NÚMERO
     const url = `https://wa.me/${numeroWhatsApp}?text=${mensajeEncoded}`;
     window.open(url, '_blank');
+
+    // Vaciar carrito/encargos después de enviar
+    if (modalModo === 'carrito') {
+        carrito = [];
+        guardarCarrito();
+    } else {
+        encargosLista = [];
+        guardarEncargos();
+    }
+    actualizarContadores();
+    renderizarCarrito();
+    mostrarToast(modalModo === 'carrito' ? 'Pedido enviado' : 'Encargo enviado');
 });
 
 // ===== VACIAR =====
