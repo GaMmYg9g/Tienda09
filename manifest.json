@@ -1,0 +1,21 @@
+{
+  "name": "Catálogo Tienda",
+  "short_name": "Tienda",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f0fa",
+  "theme_color": "#f5f0fa",
+  "description": "Catálogo de productos con ofertas, combos y encargos",
+  "icons": [
+    {
+      "src": "img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

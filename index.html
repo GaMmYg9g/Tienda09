@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f0fa">
+    <meta name="description" content="Catálogo de productos">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>Catálogo</title>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">Tienda 09</h1>
+            <div class="header-icons">
+                <button class="icon-btn" id="btnPerfil" aria-label="Perfil">
+                    <i class="fa-solid fa-user"></i>
+                </button>
+                <button class="icon-btn carrito-btn" id="btnCarrito" aria-label="Carrito">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="contador-carrito" id="contadorCarrito">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Navegación -->
+        <nav class="nav-tabs" id="navTabs">
+            <button class="nav-tab active" data-tab="tienda">
+                <i class="fa-solid fa-store"></i> Tienda
+            </button>
+            <button class="nav-tab" data-tab="encargos">
+                <i class="fa-solid fa-box-open"></i> Encargos
+                <span class="contador-encargos" id="contadorEncargos" style="display:none;">0</span>
+            </button>
+            <button class="nav-tab" data-tab="combos">
+                <i class="fa-solid fa-layer-group"></i> Combos
+            </button>
+        </nav>
+
+        <!-- Buscador -->
+        <div class="buscador-container">
+            <div class="buscador-wrapper">
+                <i class="fa-solid fa-magnifying-glass buscador-icono"></i>
+                <input type="text" id="buscador" class="buscador-input" placeholder="Buscar...">
+                <button class="buscador-clear" id="btnClearBusqueda" aria-label="Limpiar búsqueda">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Categorías -->
+        <div class="categorias-scroll" id="categoriasScroll"></div>
+    </header>
+
+    <!-- Banner de novedades -->
+    <div class="banner-novedades" id="bannerNovedades" style="display:none;">
+        <span class="banner-novedades-texto" id="bannerNovedadesTexto"></span>
+        <button class="banner-novedades-cerrar" id="btnCerrarBanner">&times;</button>
+    </div>
+
+    <!-- Main -->
+    <main class="main" id="listaProductos"></main>
+
+    <!-- Modal imagen ampliada -->
+    <div class="modal-img" id="modalImg">
+        <span class="modal-img-close" id="btnCerrarModalImg">&times;</span>
+        <img src="" alt="Producto ampliado" id="imgAmpliada">
+    </div>
+
+    <!-- Modal Perfil -->
+    <div class="modal-overlay" id="modalPerfil">
+        <div class="modal">
+            <button class="modal-close" id="btnCerrarPerfil">&times;</button>
+            <h2><i class="fa-solid fa-user-pen"></i> Tu perfil</h2>
+            <p class="modal-sub">Estos datos se usarán solo para contactarte sobre tu pedido.</p>
+            <form id="formPerfil">
+                <label for="perfilNombre">Nombre</label>
+                <input type="text" id="perfilNombre" placeholder="Tu nombre" required>
+                <label for="perfilTelefono">Teléfono</label>
+                <input type="tel" id="perfilTelefono" placeholder="612345678" required>
+                <button type="submit" class="btn btn-primario">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Carrito / Encargos -->
+    <div class="modal-overlay" id="modalCarrito">
+        <div class="modal modal-carrito">
+            <button class="modal-close" id="btnCerrarCarrito">&times;</button>
+            <h2 id="modalTituloCarrito"><i class="fa-solid fa-bag-shopping"></i> Tu carrito</h2>
+            <div class="carrito-lista" id="carritoLista">
+                <p class="carrito-vacio">Tu carrito está vacío.</p>
+            </div>
+            <div class="carrito-footer" id="carritoFooter" style="display:none;">
+                <div class="carrito-total">
+                    <span>Total:</span>
+                    <span id="carritoTotal">$0,00</span>
+                </div>
+                <div class="carrito-ahorro" id="carritoAhorro" style="display:none;">
+                    <span>Ahorras:</span>
+                    <span id="carritoAhorroValor">$0,00</span>
+                </div>
+                <div class="carrito-datos-usuario" id="carritoDatosUsuario"></div>
+                <button class="btn btn-vaciar" id="btnVaciar" style="display:none;">
+                    <i class="fa-solid fa-trash-can"></i> Vaciar
+                </button>
+                <button class="btn btn-whatsapp" id="btnEnviarWhatsApp">
+                    <i class="fa-brands fa-whatsapp"></i> <span id="textoBotonEnvio">Enviar pedido por WhatsApp</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notificaciones -->
+    <div class="toast" id="toast"></div>
+
+    <script src="js/productos.js"></script>
+    <script src="js/encargos.js"></script>
+    <script src="js/ofertas.js"></script>
+    <script src="js/combos.js"></script>
+    <script src="js/descuentosCantidad.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
