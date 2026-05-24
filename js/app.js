@@ -1089,15 +1089,16 @@ btnEnviarWhatsApp.addEventListener('click', () => {
     const ahora = new Date();
     const fechaStr = ahora.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
     const horaStr = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-    const titulo = modalModo === 'carrito' ? 'Nuevo Pedido' : 'Nueva Solicitud de Encargo';
+    const esCarrito = modalModo === 'carrito';
+    const titulo = esCarrito ? '🛍️ *NUEVO PEDIDO*' : '📦 *NUEVA SOLICITUD DE ENCARGO*';
+    const separador = '━━━━━━━━━━━━━━━━━━━━';
 
-    let mensaje = `**${titulo}**\n`;
-    mensaje += `-------------------------\n`;
-    mensaje += `**Fecha:** ${fechaStr} - ${horaStr}\n`;
-    mensaje += `**Cliente:** ${nombre}\n`;
-    mensaje += `**Teléfono:** ${telefono}\n`;
-    mensaje += `-------------------------\n`;
-    mensaje += `**Productos:**\n`;
+    let mensaje = `${titulo}\n`;
+    mensaje += `${separador}\n`;
+    mensaje += `📅 *Fecha:* ${fechaStr} - ${horaStr}\n`;
+    mensaje += `👤 *Cliente:* ${nombre}\n`;
+    mensaje += `📞 *Teléfono:* ${telefono}\n`;
+    mensaje += `${separador}\n`;
 
     const gruposCombo = {};
     const itemsSueltos = [];
@@ -1111,52 +1112,62 @@ btnEnviarWhatsApp.addEventListener('click', () => {
         }
     });
 
-    Object.keys(gruposCombo).forEach(grupoId => {
-        const items = gruposCombo[grupoId];
-        const primerItem = items[0];
-        const combo = COMBOS.find(c => c.nombre === primerItem.comboNombre);
-        const precioCombo = combo ? combo.precioCombo : 0;
-        const descripcionCombo = combo ? obtenerDescripcionCombo(combo) : '';
-        mensaje += `\n*${primerItem.comboNombre}*\n`;
-        if (descripcionCombo) mensaje += `  ${descripcionCombo}\n`;
-        items.forEach(item => {
-            const prod = PRODUCTOS.find(p => p.id === item.productoId);
-            if (!prod) return;
-            const nombreVariante = obtenerNombreVariante(prod, item.varianteIndex);
-            const nombreCompleto = nombreVariante ? `${prod.nombre} - ${nombreVariante}` : prod.nombre;
-            mensaje += `  - ${nombreCompleto} (x${item.cantidad})\n`;
-        });
-        mensaje += `  *Precio combo: ${formatearPrecio(precioCombo)}*\n`;
-    });
+    // Combos
+    if (Object.keys(gruposCombo).length > 0) {
+        mensaje += `\n🎁 *COMBOS*\n`;
+        Object.keys(gruposCombo).forEach(grupoId => {
+            const items = gruposCombo[grupoId];
+            const primerItem = items[0];
+            const combo = COMBOS.find(c => c.nombre === primerItem.comboNombre);
+            const precioCombo = combo ? combo.precioCombo : 0;
+            const descripcionCombo = combo ? obtenerDescripcionCombo(combo) : '';
 
-    itemsSueltos.forEach(item => {
-        const listaOrigen = item.esTienda ? PRODUCTOS : ENCARGOS;
-        const prod = obtenerProductoPorId(item.productoId, listaOrigen);
-        if (!prod) return;
-        const claveCantidad = item.productoId + '_' + (item.varianteIndex !== null ? item.varianteIndex : '');
-        const cantidadTotal = listaItems
-            .filter(i => !i.comboId && i.productoId === item.productoId && i.varianteIndex === item.varianteIndex)
-            .reduce((sum, i) => sum + i.cantidad, 0);
-        const precio = obtenerPrecioFinalCompleto(prod, item.varianteIndex, item.esTienda, cantidadTotal);
-        const nombreVariante = obtenerNombreVariante(prod, item.varianteIndex);
-        const nombreCompleto = nombreVariante ? `${prod.nombre} - ${nombreVariante}` : prod.nombre;
-        mensaje += `- ${nombreCompleto} (x${item.cantidad}) - ${formatearPrecio(precio)} c/u\n`;
-    });
+            mensaje += `\n  *${primerItem.comboNombre}*\n`;
+            if (descripcionCombo) mensaje += `  _${descripcionCombo}_\n`;
+            items.forEach(item => {
+                const prod = PRODUCTOS.find(p => p.id === item.productoId);
+                if (!prod) return;
+                const nombreVariante = obtenerNombreVariante(prod, item.varianteIndex);
+                const nombreCompleto = nombreVariante ? `${prod.nombre} (${nombreVariante})` : prod.nombre;
+                mensaje += `    • ${item.cantidad}x ${nombreCompleto}\n`;
+            });
+            mensaje += `  💰 *Precio combo: ${formatearPrecio(precioCombo)}*\n`;
+        });
+    }
+
+    // Productos sueltos
+    if (itemsSueltos.length > 0) {
+        mensaje += `\n📦 *PRODUCTOS*\n`;
+        itemsSueltos.forEach(item => {
+            const listaOrigen = item.esTienda ? PRODUCTOS : ENCARGOS;
+            const prod = obtenerProductoPorId(item.productoId, listaOrigen);
+            if (!prod) return;
+            const claveCantidad = item.productoId + '_' + (item.varianteIndex !== null ? item.varianteIndex : '');
+            const cantidadTotal = listaItems
+                .filter(i => !i.comboId && i.productoId === item.productoId && i.varianteIndex === item.varianteIndex)
+                .reduce((sum, i) => sum + i.cantidad, 0);
+            const precio = obtenerPrecioFinalCompleto(prod, item.varianteIndex, item.esTienda, cantidadTotal);
+            const nombreVariante = obtenerNombreVariante(prod, item.varianteIndex);
+            const nombreCompleto = nombreVariante ? `${prod.nombre} (${nombreVariante})` : prod.nombre;
+            mensaje += `  • ${nombreCompleto} - ${item.cantidad}x - ${formatearPrecio(precio)} c/u\n`;
+        });
+    }
 
     const totales = calcularTotales(listaItems);
-    mensaje += `-------------------------\n`;
-    mensaje += `**TOTAL: ${formatearPrecio(totales.totalFinal)}**\n`;
+    mensaje += `\n${separador}\n`;
+    mensaje += `💵 *TOTAL: ${formatearPrecio(totales.totalFinal)}*\n`;
     if (totales.ahorro > 0) {
-        mensaje += `**Ahorras: ${formatearPrecio(totales.ahorro)}**\n`;
+        mensaje += `✅ *Ahorras: ${formatearPrecio(totales.ahorro)}*\n`;
     }
+    mensaje += `${separador}`;
 
     const mensajeEncoded = encodeURIComponent(mensaje);
     const numeroWhatsApp = '5356502201'; // ← CAMBIA POR TU NÚMERO
     const url = `https://wa.me/${numeroWhatsApp}?text=${mensajeEncoded}`;
     window.open(url, '_blank');
 
-    // Vaciar carrito/encargos después de enviar
-    if (modalModo === 'carrito') {
+    // Vaciar después de enviar
+    if (esCarrito) {
         carrito = [];
         guardarCarrito();
     } else {
@@ -1165,7 +1176,7 @@ btnEnviarWhatsApp.addEventListener('click', () => {
     }
     actualizarContadores();
     renderizarCarrito();
-    mostrarToast(modalModo === 'carrito' ? 'Pedido enviado' : 'Encargo enviado');
+    mostrarToast(esCarrito ? 'Pedido enviado' : 'Encargo enviado');
 });
 
 // ===== VACIAR =====
